@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CÓDIGO ANTI-CACHE: Obriga o navegador a sempre baixar a versão mais recente -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>Manual de Cadastro de Leads - Fast Tennis</title>
+    
     <!-- Importação do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -88,7 +95,7 @@
             bottom: 20px;
             left: 20px;
             z-index: 100;
-            display: none;
+            display: none; /* Escondido por padrão */
             gap: 10px;
         }
 
@@ -149,6 +156,7 @@
             padding: 8px;
         }
 
+        /* Cursor e borda na logo apenas no modo DEV */
         body.dev-mode .logo-container {
             cursor: pointer;
             border: 2px dashed var(--gray-medium);
@@ -176,7 +184,7 @@
         }
 
         body.dev-mode .logo-placeholder {
-            display: block;
+            display: block; /* Mostra o aviso de clique apenas para DEV */
         }
 
         .header-title {
@@ -223,7 +231,7 @@
         }
 
         body.dev-mode .header-title .edit-hint {
-            display: block;
+            display: block; /* Mostra aviso de edição só para DEV */
         }
 
         .header-title p {
@@ -629,11 +637,11 @@
             background: var(--white);
         }
         
+        /* Textarea protegida no modo visualização */
         .script-textarea[readonly] {
             cursor: text; 
             background: var(--bg-color);
         }
-        
         .script-textarea[readonly]:focus {
             box-shadow: none;
             border-color: var(--gray-light);
@@ -1027,6 +1035,7 @@
                 <span class="step-number">Coletar Nome</span>
             </div>
             <div class="script-wrapper">
+                <!-- Textareas possuem o atributo readonly por padrão -->
                 <textarea class="script-textarea" id="script1" maxlength="1000" readonly>Olá! Tudo bem? Seja muito bem-vindo(a) à Fast Tennis! 🎾
 
 Ficamos muito felizes com seu interesse em conhecer a nossa primeira experiência! Para começarmos o seu atendimento, poderia me informar o seu nome completo?</textarea>
@@ -1221,7 +1230,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 
 
 <!-- MODAIS GARANTIDOS POR CIMA DE TUDO -->
-
 <div class="modal-overlay" id="devAuthModal">
     <div class="modal-box">
         <h3>🔒 Modo Administrador</h3>
@@ -1277,7 +1285,13 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     function abrirUnidades() {
         showToast('📍 Abrindo consulta de unidades...', 'success');
         try {
-            window.open(LINK_BI_UNIDADES, '_blank');
+            const a = document.createElement('a');
+            a.href = LINK_BI_UNIDADES;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         } catch (e) {
             showToast('❌ O navegador bloqueou o link.', 'error');
         }
@@ -1291,7 +1305,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
             const textArea = document.getElementById(elementId);
             const textToCopy = textArea.value;
             
-            // Método moderno
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     handleCopySuccess(button);
@@ -1299,7 +1312,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
                     fallbackCopy(textArea, button);
                 });
             } else {
-                // Método antigo (fallback)
                 fallbackCopy(textArea, button);
             }
         } catch(err) {
@@ -1349,7 +1361,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     // BUSCAR DADOS DO SUPABASE (Somente se ativo)
     // ============================================
     async function loadConfigFromCloud() {
-        if (!supabase) return; // Se a nuvem falhar, ignora e usa padrão da tela
+        if (!supabase) return; 
         
         try {
             const { data, error } = await supabase.from('app_config').select('*').eq('id', 1).single();
