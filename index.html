@@ -234,14 +234,14 @@
             margin-top: 4px;
         }
 
-        /* TITLE EDIT MODAL E SENHA MODAL */
+        /* MODAIS CSS */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(4px);
-            z-index: 999;
+            z-index: 9999; /* Z-index altíssimo */
             align-items: center;
             justify-content: center;
         }
@@ -258,6 +258,11 @@
             width: 90%;
             box-shadow: var(--shadow-lg);
             animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-box h3 {
@@ -627,7 +632,7 @@
         
         /* Textarea protegida no modo visualização */
         .script-textarea[readonly] {
-            cursor: text; /* Permite selecionar o texto para copiar */
+            cursor: text; 
             background: var(--bg-color);
         }
         .script-textarea[readonly]:focus {
@@ -813,7 +818,7 @@
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -910,32 +915,6 @@
                 <span class="edit-hint dev-only">✏️ Clique para editar</span>
             </div>
             <p>Cadastro de Leads do Site • Operação Comercial</p>
-        </div>
-    </div>
-
-    <!-- MODAL DE SENHA DESENVOLVEDOR -->
-    <div class="modal-overlay" id="devAuthModal">
-        <div class="modal-box">
-            <h3>🔒 Modo Administrador</h3>
-            <div class="sub">Digite a senha para habilitar a edição do manual.</div>
-            <input type="password" id="devPasswordInput" placeholder="Senha..." onkeydown="if(event.key === 'Enter') verifyDevPassword()">
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeDevModal()">Cancelar</button>
-                <button class="btn-primary-action" onclick="verifyDevPassword()">Entrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE EDITAR TÍTULO -->
-    <div class="modal-overlay" id="titleEditOverlay">
-        <div class="modal-box">
-            <h3>✏️ Editar Título</h3>
-            <div class="sub">Digite o novo título do manual</div>
-            <input type="text" id="titleInput" placeholder="Digite o novo título...">
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeTitleEditor()">Cancelar</button>
-                <button class="btn-primary-action" onclick="saveTitle()">Salvar na Nuvem</button>
-            </div>
         </div>
     </div>
 
@@ -1236,6 +1215,33 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         <button class="btn-dev-mode" onclick="toggleDevMode()">🔒 Admin</button>
     </div>
 
+</div> <!-- FIM DO CONTAINER -->
+
+<!-- MOVIDO PARA FORA DO CONTAINER PARA EVITAR CONFLITO CSS -->
+<!-- MODAL DE SENHA DESENVOLVEDOR -->
+<div class="modal-overlay" id="devAuthModal">
+    <div class="modal-box">
+        <h3>🔒 Modo Administrador</h3>
+        <div class="sub">Digite a senha para habilitar a edição do manual.</div>
+        <input type="password" id="devPasswordInput" placeholder="Senha..." onkeydown="if(event.key === 'Enter') verifyDevPassword()">
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeDevModal()">Cancelar</button>
+            <button class="btn-primary-action" onclick="verifyDevPassword()">Entrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE EDITAR TÍTULO -->
+<div class="modal-overlay" id="titleEditOverlay">
+    <div class="modal-box">
+        <h3>✏️ Editar Título</h3>
+        <div class="sub">Digite o novo título do manual</div>
+        <input type="text" id="titleInput" placeholder="Digite o novo título...">
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeTitleEditor()">Cancelar</button>
+            <button class="btn-primary-action" onclick="saveTitle()">Salvar na Nuvem</button>
+        </div>
+    </div>
 </div>
 
 <!-- TOAST NOTIFICATION -->
@@ -1257,12 +1263,18 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     let isDevMode = false;
 
     // ============================================
-    // ABRIR CONSULTA DE UNIDADES
+    // ABRIR CONSULTA DE UNIDADES (CORRIGIDO)
     // ============================================
     function abrirUnidades() {
         showToast('📍 Abrindo consulta de unidades...', 'success');
         try {
-            window.open(LINK_BI_UNIDADES, '_blank');
+            const a = document.createElement('a');
+            a.href = LINK_BI_UNIDADES;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         } catch (e) {
             showToast('❌ Não foi possível abrir o link.', 'error');
         }
@@ -1294,7 +1306,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
                 .eq('id', 1)
                 .single();
 
-            // Se achar dados, preenche. Se der erro (ex: vazio), apenas ignora e mantém o padrão
             if (data) {
                 if (data.titulo) updateTitleUI(data.titulo);
                 
@@ -1326,14 +1337,11 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     // ============================================
     function toggleDevMode() {
         if (isDevMode) {
-            // Desativar Modo Dev
             isDevMode = false;
             document.body.classList.remove('dev-mode');
-            // Bloqueia textareas
             document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = true);
             showToast('🔒 Modo de visualização ativado.', 'info');
         } else {
-            // Pedir Senha
             document.getElementById('devAuthModal').classList.add('active');
             document.getElementById('devPasswordInput').value = '';
             setTimeout(() => document.getElementById('devPasswordInput').focus(), 100);
@@ -1349,7 +1357,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         if (pwd === 'fast2026') {
             isDevMode = true;
             document.body.classList.add('dev-mode');
-            // Libera as caixas de texto para edição
             document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = false);
             closeDevModal();
             showToast('🔓 Modo de edição liberado!', 'success');
@@ -1364,7 +1371,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     // UPLOAD E AÇÕES (SÓ FUNCIONAM NO MODO DEV)
     // ============================================
     function triggerLogoUpload() {
-        if (!isDevMode) return; // Trava o clique se não for admin
+        if (!isDevMode) return; 
         document.getElementById('logo-upload').click();
     }
 
@@ -1446,7 +1453,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     // EDITAR TÍTULO (SÓ FUNCIONA NO MODO DEV)
     // ============================================
     function openTitleEditor() {
-        if (!isDevMode) return; // Trava o clique se não for admin
+        if (!isDevMode) return; 
         
         const titleElement = document.getElementById('main-title');
         const currentText = titleElement.textContent.trim();
