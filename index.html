@@ -1119,44 +1119,28 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 </div>
 
 <script>
+    // ============================================
+    // CONFIGURAÇÕES DE LINKS E CHAVES
+    // ============================================
+    
+    // 👇 O LINK COMPLETO DO SEU BI HOMOLOGADO ESTÁ AQUI: 👇
+    const LINK_BI_UNIDADES = 'https://franciscadaniela2710-byte.github.io/enderecosDeUnidade/'; 
+
     const TITLE_STORAGE_KEY = 'ft_manual_title';
     const LOGO_STORAGE_KEY = 'ft_manual_logo';
     const BG_STORAGE_KEY = 'ft_manual_bg';
 
     // ============================================
-    // ABRIR CONSULTA DE UNIDADES (RESTAURADA)
+    // ABRIR CONSULTA DE UNIDADES (Atualizada para Web)
     // ============================================
     function abrirUnidades() {
-        const caminhoArquivo = 'file:///C:/Users/05042/Downloads/BI_Geracao_Leads_Fast_Tennis_v7.html';
-        
         showToast('📍 Abrindo consulta de unidades...', 'success');
         
         try {
-            const janela = window.open(caminhoArquivo, '_blank');
-            if (janela) return;
-        } catch (e) {}
-        
-        try {
-            const janela = window.open('BI_Geracao_Leads_Fast_Tennis_v7.html', '_blank');
-            if (janela) return;
-        } catch (e) {}
-        
-        try {
-            const janela = window.open('./BI_Geracao_Leads_Fast_Tennis_v7.html', '_blank');
-            if (janela) return;
-        } catch (e) {}
-        
-        try {
-            const link = document.createElement('a');
-            link.href = 'BI_Geracao_Leads_Fast_Tennis_v7.html';
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            return;
-        } catch (e) {}
-        
-        showToast('❌ Não foi possível abrir. Tente abrir o arquivo manualmente.', 'error');
+            window.open(LINK_BI_UNIDADES, '_blank');
+        } catch (e) {
+            showToast('❌ Não foi possível abrir o link.', 'error');
+        }
     }
 
     // ============================================
