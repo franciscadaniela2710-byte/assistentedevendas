@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Cadastro de Leads - Fast Tennis</title>
+    <style>
+        :root {
+            --primary-color: #1E46C5;
+            --primary-dark: #1638A0;
+            --primary-light: #E8EDFA;
+            --accent-color: #19F000;
+            --accent-dark: #14C700;
+            --accent-light: #E8FFE6;
+            --white: #FFFFFF;
+            --gray-light: #D9D9D9;
+            --gray-medium: #B0B0B0;
+            --bg-color: #F4F6FA;
+            --text-dark: #1A1A2E;
+            --text-medium: #4A4A6A;
+            --text-light: #8A8AAA;
+            --border-color: #D9D9D9;
+            --shadow-sm: 0 2px 8px rgba(30, 70, 197, 0.08);
+            --shadow-md: 0 4px 16px rgba(30, 70, 197, 0.12);
+            --shadow-lg: 0 8px 32px rgba(30, 70, 197, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --orange: #F59E0B;
+            --red: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-repeat: no-repeat;
+            background-position: bottom right;
+            background-attachment: fixed;
+            background-size: 50% auto;
+            min-height: 100vh;
+            padding: 24px;
+            transition: background-image 0.3s ease;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            padding: 40px;
+            animation: fadeIn 0.6s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UPLOAD DE FUNDO */
+        .bg-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-upload-bg {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-medium);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-upload-bg:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* HEADER & LOGO */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+            border-bottom: 3px solid var(--primary-color);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 0 0 auto;
+            align-items: center;
+        }
+
+        .logo-container {
+            width: 200px;
+            min-height: 70px;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: transparent;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .logo-container:hover {
+            background: var(--primary-light);
+            transform: scale(1.02);
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100px;
+            object-fit: contain;
+            display: none;
+        }
+
+        .logo-placeholder {
+            font-size: 13px;
+            color: var(--text-medium);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: right;
+        }
+
+        .header-title .title-wrapper {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            color: var(--primary-color);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            transition: var(--transition);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            user-select: none;
+        }
+
+        .header-title h1:hover {
+            background: var(--primary-light);
+        }
+
+        .header-title h1 .highlight {
+            color: var(--accent-color);
+        }
+
+        .header-title .edit-hint {
+            font-size: 9px;
+            color: var(--text-light);
+            display: block;
+            opacity: 0.6;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            color: var(--text-medium);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* TITLE EDIT MODAL */
+        .title-edit-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-edit-overlay.active {
+            display: flex;
+        }
+
+        .title-edit-box {
+            background: var(--white);
+            padding: 32px;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        .title-edit-box h3 {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .title-edit-box .sub {
+            font-size: 13px;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+        }
+
+        .title-edit-box input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: var(--transition);
+            margin-bottom: 12px;
+        }
+
+        .title-edit-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 70, 197, 0.1);
+        }
+
+        .title-edit-box .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .title-edit-box .modal-actions button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .title-edit-box .modal-actions .btn-save {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .title-edit-box .modal-actions .btn-save:hover {
+            background: var(--primary-dark);
+        }
+
+        .title-edit-box .modal-actions .btn-cancel {
+            background: var(--gray-light);
+            color: var(--text-medium);
+        }
+
+        .title-edit-box .modal-actions .btn-cancel:hover {
+            background: #C0C0C0;
+        }
+
+        /* JORNADA DO LEAD */
+        .jornada-container {
+            background: linear-gradient(135deg, rgba(244, 246, 250, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            border: 1px solid var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .jornada-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .jornada-step {
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            padding: 14px 10px;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .jornada-step:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .jornada-step .step-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .jornada-step .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: block;
+        }
+
+        .jornada-step .step-desc {
+            font-size: 10px;
+            color: var(--text-light);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .jornada-step.active {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+        }
+
+        .jornada-step.active .step-label {
+            color: var(--accent-dark);
+        }
+
+        .jornada-step.rd-step {
+            border-color: var(--purple);
+            background: #F5F3FF;
+        }
+
+        .jornada-step.rd-step .step-label {
+            color: var(--purple);
+        }
+
+        .jornada-arrow {
+            font-size: 20px;
+            color: var(--primary-color);
+            font-weight: 300;
+            flex-shrink: 0;
+        }
+
+        /* FLUXO RD */
+        .rd-flow-box {
+            background: #F5F3FF;
+            border: 1px solid var(--purple);
+            border-radius: var(--border-radius);
+            padding: 16px 20px;
+            margin-top: 20px;
+        }
+
+        .rd-flow-box .rd-title {
+            font-weight: 700;
+            color: var(--purple);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .rd-flow-box .rd-step {
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--text-dark);
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .rd-flow-box .rd-step:last-child {
+            border-bottom: none;
+        }
+
+        .rd-flow-box .rd-step .check {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .rd-flow-box .rd-step .highlight {
+            background: var(--accent-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--accent-dark);
+        }
+
+        .rd-flow-box .rd-step .important {
+            background: #FEE2E2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #DC2626;
+        }
+
+        /* ALERTA BOX */
+        .alert-box {
+            padding: 16px 20px;
+            border-radius: 8px;
+            background: #FFF3E0;
+            border-left: 5px solid #FF9800;
+            font-weight: 500;
+            font-size: 14px;
+            color: #E65100;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .alert-box.danger {
+            background: #FEF2F2;
+            border-left-color: #DC2626;
+            color: #991B1B;
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+        }
+
+        .alert-box.danger strong {
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .alert-box.purple {
+            background: #F5F3FF;
+            border-left-color: var(--purple);
+            color: #5B21B6;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: -2px;
+        }
+
+        /* SEÇÕES */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text-dark);
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-left: 40px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        /* STEP CARDS */
+        .step-card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-card .header-step {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .step-badge {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .step-badge.important {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        .step-badge.sondagem {
+            background: var(--purple);
+            color: white;
+        }
+
+        .step-badge.finalizado {
+            background: var(--red);
+            color: white;
+        }
+
+        .step-number {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-medium);
+        }
+
+        .step-instruction {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .step-instruction small {
+            font-weight: 400;
+            color: var(--text-light);
+            display: block;
+            margin-top: 2px;
+            font-size: 13px;
+        }
+
+        .script-wrapper {
+            position: relative;
+        }
+
+        .script-textarea {
+            width: 100%;
+            min-height: 110px;
+            background: var(--bg-color);
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: var(--text-dark);
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .script-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 70, 197, 0.1);
+            background: var(--white);
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+            padding-right: 4px;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-copy {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-copy:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-copy.copied {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+
+        .btn-unidades {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--purple);
+            color: var(--white);
+        }
+
+        .btn-unidades:hover {
+            background: #7C3AED;
+            transform: translateY(-1px);
+        }
+
+        /* TAGS */
+        .tags-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+
+        .tag {
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-agendado {
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            border: 1px solid var(--accent-color);
+        }
+
+        .tag-andamento {
+            background: #FEF3C7;
+            color: #D97706;
+            border: 1px solid var(--orange);
+        }
+
+        .tag-finalizado {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #DC2626;
+        }
+
+        /* CRM GRID */
+        .crm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-light);
+            margin-bottom: 16px;
+        }
+
+        .crm-field {
+            background: var(--white);
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .crm-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .crm-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .badge-always {
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-left: 6px;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--text-dark);
+            color: var(--white);
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid var(--accent-color);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--primary-color);
+            border-color: var(--accent-color);
+        }
+
+        .toast.error {
+            background: var(--red);
+            border-color: var(--red);
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 2px solid var(--gray-light);
+        }
+
+        .footer strong {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            body { background-size: 100%; }
+            .container { padding: 20px; }
+            .header { flex-direction: column; text-align: center; }
+            .header-title h1, .header-title p { text-align: center; }
+            .jornada-steps { flex-direction: column; align-items: stretch; }
+            .jornada-arrow { transform: rotate(90deg); padding: 4px 0; }
+            .crm-grid { grid-template-columns: 1fr; }
+            .toast { bottom: 16px; right: 16px; left: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- BOTÕES FIXOS DE UPLOAD -->
+<div class="bg-controls">
+    <button class="btn-upload-bg" onclick="document.getElementById('bg-upload').click()" title="Alterar Fundo da Tela">
+        🖼️ Alterar Fundo
+    </button>
+    <button class="btn-upload-bg" onclick="removerFundo()" title="Remover Fundo da Tela" style="padding: 8px;">
+        🗑️
+    </button>
+</div>
+<input type="file" id="bg-upload" accept="image/*" style="display:none;">
+
+<div class="container">
+    
+    <!-- HEADER & UPLOAD DE LOGO -->
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-container" onclick="document.getElementById('logo-upload').click()" title="Clique para anexar sua Logo">
+                <img id="logo-img" alt="Logo Fast Tennis">
+                <span class="logo-placeholder" id="logo-text">📷 Clique para<br>anexar Logo</span>
+            </div>
+            <span style="font-size: 10px; color: var(--text-light); margin-top: 4px;">As imagens ficam salvas no seu navegador</span>
+            <input type="file" id="logo-upload" accept="image/*" style="display:none;">
+        </div>
+        <div class="header-title">
+            <div class="title-wrapper" onclick="openTitleEditor()" title="Clique para editar o título">
+                <h1 id="main-title">🎾 Manual do <span class="highlight">Assistente</span></h1>
+                <span class="edit-hint">✏️ Clique para editar</span>
+            </div>
+            <p>Cadastro de Leads do Site • Operação Comercial</p>
+        </div>
+    </div>
+
+    <!-- TITLE EDIT MODAL -->
+    <div class="title-edit-overlay" id="titleEditOverlay">
+        <div class="title-edit-box">
+            <h3>✏️ Editar Título</h3>
+            <div class="sub">Digite o novo título do manual</div>
+            <input type="text" id="titleInput" placeholder="Digite o novo título...">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeTitleEditor()">Cancelar</button>
+                <button class="btn-save" onclick="saveTitle()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JORNADA DO LEAD -->
+    <div class="section">
+        <div class="section-header">
+            <span class="icon">🚀</span>
+            <h2>Jornada do Lead</h2>
+        </div>
+        
+        <div class="jornada-container">
+            <div class="jornada-steps">
+                <div class="jornada-step active">
+                    <span class="step-icon">🌐</span>
+                    <span class="step-label">Site</span>
+                    <span class="step-desc">Acessa fasttennis.com.br</span>
+                </div>
+                <span class="jornada-arrow">→</span>
+                
+                <div class="jornada-step">
+                    <span class="step-icon">💬</span>
+                    <span class="step-label">WhatsApp</span>
+                    <span class="step-desc">Clica no ícone do WhatsApp</span>
+                </div>
+                <span class="jornada-arrow">→</span>
+                
+                <div class="jornada-step">
+                    <span class="step-icon">📱</span>
+                    <span class="step-label">Chat</span>
+                    <span class="step-desc">Direcionado para o chat</span>
+                </div>
+                <span class="jornada-arrow">→</span>
+                
+                <div class="jornada-step rd-step">
+                    <span class="step-icon">📊</span>
+                    <span class="step-label">RD Station</span>
+                    <span class="step-desc">Extensão integra as informações</span>
+                </div>
+            </div>
+
+            <!-- Fluxo no RD -->
+            <div class="rd-flow-box">
+                <div class="rd-title">📋 Ao iniciar a tratativa, a Assistente verifica na extensão do RD:</div>
+                
+                <div class="rd-step">
+                    <span class="check">✔</span>
+                    <div>
+                        <strong>Novo Cliente?</strong> Na extensão do RD aparecerá:
+                        <div style="margin-top: 4px; padding-left: 12px; color: var(--text-medium);">
+                            → <span class="highlight">Novo contato</span>: Associe a um novo contato<br>
+                            → <span class="important">Contato ou envio de comunicação</span>: Sempre dê consentimento
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rd-step">
+                    <span class="check">✔</span>
+                    <div><strong>Conferir e SALVAR</strong> - Após salvar, aparece o campo <span class="highlight">NOVA NEGOCIAÇÃO</span>. Todos os leads serão cadastrados no sistema.</div>
+                </div>
+
+                <div class="alert-box danger" style="margin: 12px 0 12px 24px; padding: 12px 16px;">
+                    <span class="alert-icon">⚠️</span>
+                    <div>
+                        <strong>Atenção com Lead Perdido:</strong><br>
+                        Se ao adicionar o lead, o sistema mostrar que ele está cadastrado como <strong>Perdido</strong>, você deve obrigatoriamente <strong>apagar a negociação antiga</strong> e cadastrar novamente (iniciando uma nova).
+                    </div>
+                </div>
+
+                <div class="rd-step">
+                    <span class="check">✔</span>
+                    <div><strong>Agendamento confirmado:</strong> Cadastrar na <span class="highlight">unidade solicitada</span>.</div>
+                </div>
+
+                <div class="rd-step">
+                    <span class="check">✔</span>
+                    <div><strong>Sem interesse / Outra demanda:</strong> Selecionar o <span class="important">FUNIL DFY</span>.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 1: WHATSAPP FLUXO -->
+    <div class="section">
+        <div class="section-header">
+            <span class="icon">💬</span>
+            <h2>Fluxo de Abordagem no WhatsApp</h2>
+        </div>
+        <div class="section-subtitle">
+            ✏️ Clique dentro das caixas para editar o texto das mensagens
+        </div>
+
+        <div class="step-card" style="border-left: 4px solid var(--purple);">
+            <div class="header-step">
+                <span class="step-badge flow">VERIFICAÇÃO</span>
+                <span class="step-number">Cliente já se identificou?</span>
+            </div>
+            <div class="step-instruction">
+                Antes de iniciar, verifique se o cliente já se identificou no pré-cadastro.
+                <small>Se já tiver nome e informações, prossiga diretamente para o Passo 2</small>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="header-step">
+                <span class="step-badge">Passo 1</span>
+                <span class="step-number">Coletar Nome</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script1" maxlength="1000">Olá! Tudo bem? Seja muito bem-vindo(a) à Fast Tennis! 🎾
+
+Ficamos muito felizes com seu interesse em conhecer a nossa primeira experiência! Para começarmos o seu atendimento, poderia me informar o seu nome completo?</textarea>
+                <div class="char-counter"><span id="count1">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script1', this)">📋 Copiar Mensagem</button>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="header-step">
+                <span class="step-badge">Passo 2</span>
+                <span class="step-number">Identificar o Aluno</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script2" maxlength="1000">Perfeito, obrigado pelas informações!
+
+Deixa eu te perguntar: as aulas de tênis seriam para você mesmo ou seriam para outra pessoa (como um filho, cônjuge ou amigo)?</textarea>
+                <div class="char-counter"><span id="count2">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script2', this)">📋 Copiar Mensagem</button>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="header-step">
+                <span class="step-badge">Passo 3</span>
+                <span class="step-number">Localização</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script3" maxlength="1000">Excelente! Para que eu possa te direcionar perfeitamente, qual Cidade e Bairro você mora ou tem preferência para treinar? 
+
+Temos algumas unidades e quero ver qual fica mais pertinho e confortável para você!</textarea>
+                <div class="char-counter"><span id="count3">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script3', this)">📋 Copiar Mensagem</button>
+                <button class="btn-unidades" onclick="abrirUnidades()">📍 Consultar Unidades</button>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="header-step">
+                <span class="step-badge">Passo 4</span>
+                <span class="step-number">Confirmação e Interesse</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script4" maxlength="1000">Encontrei a melhor opção para você! 📌
+
+A nossa unidade ideal fica no endereço: [Inserir endereço da unidade aqui].
+
+Fica viável para você nesse local? Se sim, tem interesse em prosseguir com o seu cadastro para agendarmos a sua experiência?</textarea>
+                <div class="char-counter"><span id="count4">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script4', this)">📋 Copiar Mensagem</button>
+                <button class="btn-unidades" onclick="abrirUnidades()">📍 Consultar Unidades</button>
+            </div>
+        </div>
+
+        <div class="step-card" style="border-left: 4px solid var(--purple);">
+            <div class="header-step">
+                <span class="step-badge sondagem">🔍 SONDAGEM</span>
+                <span class="step-number">Entender o motivo da negativa</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script5a" maxlength="1000">Entendo perfeitamente! Agradecemos muito pelo seu contato e interesse em conhecer a Fast Tennis. 🎾
+
+Se não for incômodo, posso saber o que te fez repensar agora? Sua opinião é muito importante para nós e nos ajuda a melhorar cada vez mais!
+
+Fique à vontade para compartilhar, seja qual for o motivo - estou aqui para ouvir e ajudar no que for possível.</textarea>
+                <div class="char-counter"><span id="count5a">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script5a', this)">📋 Copiar Mensagem</button>
+            </div>
+        </div>
+
+        <div class="step-card" style="border-left: 4px solid var(--accent-color);">
+            <div class="header-step">
+                <span class="step-badge important">✅ CONFIRMADO</span>
+                <span class="step-number">Agendamento Confirmado</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script6" maxlength="1000">Excelente! Fico muito feliz com a sua decisão! 🎉
+
+Agora vou criar a sua negociação no sistema e encaminhar para o nosso Time Comercial da unidade escolhida. Em breve um de nossos consultores entrará em contato para alinhar os melhores horários e finalizar o agendamento da sua experiência!
+
+Ficou com mais alguma dúvida em que eu possa te ajudar agora? 
+
+Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos em breve nas quadras! 🎾</textarea>
+                <div class="char-counter"><span id="count6">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script6', this)">📋 Copiar Mensagem</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 2: CRM REGISTRO -->
+    <div class="section">
+        <div class="section-header">
+            <span class="icon">📊</span>
+            <h2>Registro no CRM (RD Station)</h2>
+        </div>
+        
+        <div class="alert-box danger">
+            <span class="alert-icon">🗑️</span>
+            <div>
+                <strong>Atenção ao registrar Lead Perdido:</strong><br>
+                Se ao consultar o lead ele estiver marcado como <strong>PERDIDO</strong> no histórico, é proibido reaproveitar. Você deve <strong>apagar a negociação antiga no CRM</strong> e <strong>cadastrar novamente do zero</strong>.
+            </div>
+        </div>
+
+        <div class="section-subtitle">
+            Vá em <strong>NOVA NEGOCIAÇÃO</strong> e garanta as seguintes informações essenciais:
+        </div>
+        
+        <div class="crm-grid">
+            <div class="crm-field">
+                <span class="crm-label">🏷️ Nome da Negociação</span>
+                <span class="crm-value">[Nome do Cliente] + LEAD DO SITE</span>
+            </div>
+            <div class="crm-field">
+                <span class="crm-label">⭐ Qualificação</span>
+                <span class="crm-value">5 <span class="badge-always">SEMPRE</span></span>
+            </div>
+            <div class="crm-field">
+                <span class="crm-label">📍 Funil</span>
+                <span class="crm-value">[Unidade solicitada] ou <span style="color: #4F46E5;">DFY</span></span>
+            </div>
+            <div class="crm-field">
+                <span class="crm-label">📌 Etapa do Funil</span>
+                <span class="crm-value">LEAD <span class="badge-always">SEMPRE</span></span>
+            </div>
+            <div class="crm-field">
+                <span class="crm-label">🌐 Fonte</span>
+                <span class="crm-value">SITE FAST TENNIS <span class="badge-always">SEMPRE</span></span>
+            </div>
+        </div>
+
+        <!-- ETIQUETAS MOVIDAS PARA O FINAL -->
+        <div class="alert-box purple" style="margin-top: 16px;">
+            <span class="alert-icon">🏷️</span>
+            <div>
+                <strong>Etiquetas no WhatsApp:</strong> Após a conclusão da tratativa, atribua a etiqueta correspondente no seu <strong>WhatsApp</strong> para identificar o status do lead:
+                <div class="tags-container" style="margin: 8px 0 0 0;">
+                    <span class="tag tag-agendado">✅ Agendado</span>
+                    <span class="tag tag-andamento">⏳ Em Andamento</span>
+                    <span class="tag tag-finalizado">❌ Finalizado</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        🎾 <strong>Fast Tennis</strong> • Manual Interno de Vendas • Atualizado em 2026<br>
+    </div>
+
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast">
+    <span id="toast-icon">✅</span>
+    <span id="toast-message">Mensagem copiada!</span>
+</div>
+
+<script>
+    const TITLE_STORAGE_KEY = 'ft_manual_title';
+    const LOGO_STORAGE_KEY = 'ft_manual_logo';
+    const BG_STORAGE_KEY = 'ft_manual_bg';
+
+    // ============================================
+    // ABRIR CONSULTA DE UNIDADES (RESTAURADA)
+    // ============================================
+    function abrirUnidades() {
+        const caminhoArquivo = 'file:///C:/Users/05042/Downloads/BI_Geracao_Leads_Fast_Tennis_v7.html';
+        
+        showToast('📍 Abrindo consulta de unidades...', 'success');
+        
+        try {
+            const janela = window.open(caminhoArquivo, '_blank');
+            if (janela) return;
+        } catch (e) {}
+        
+        try {
+            const janela = window.open('BI_Geracao_Leads_Fast_Tennis_v7.html', '_blank');
+            if (janela) return;
+        } catch (e) {}
+        
+        try {
+            const janela = window.open('./BI_Geracao_Leads_Fast_Tennis_v7.html', '_blank');
+            if (janela) return;
+        } catch (e) {}
+        
+        try {
+            const link = document.createElement('a');
+            link.href = 'BI_Geracao_Leads_Fast_Tennis_v7.html';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        } catch (e) {}
+        
+        showToast('❌ Não foi possível abrir. Tente abrir o arquivo manualmente.', 'error');
+    }
+
+    // ============================================
+    // CARREGAR IMAGENS SALVAS (LOGO E FUNDO)
+    // ============================================
+    function loadSavedImages() {
+        // Logo
+        try {
+            const savedLogo = localStorage.getItem(LOGO_STORAGE_KEY);
+            if (savedLogo) {
+                document.getElementById('logo-img').src = savedLogo;
+                document.getElementById('logo-img').style.display = 'block';
+                document.getElementById('logo-text').style.display = 'none';
+            }
+        } catch (e) { console.error('Erro ao carregar logo', e); }
+
+        // Fundo
+        try {
+            const savedBg = localStorage.getItem(BG_STORAGE_KEY);
+            if (savedBg) {
+                document.body.style.backgroundImage = `url(${savedBg})`;
+            }
+        } catch (e) { console.error('Erro ao carregar fundo', e); }
+    }
+
+    // ============================================
+    // UPLOAD DA LOGO (Com FileReader e LocalStorage)
+    // ============================================
+    document.getElementById('logo-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const base64Image = event.target.result;
+            
+            try {
+                localStorage.setItem(LOGO_STORAGE_KEY, base64Image);
+                
+                // Aplica visualmente
+                document.getElementById('logo-img').src = base64Image;
+                document.getElementById('logo-img').style.display = 'block';
+                document.getElementById('logo-text').style.display = 'none';
+                
+                showToast('✅ Logo anexada e salva com sucesso!', 'success');
+            } catch (err) {
+                showToast('⚠️ A imagem é muito pesada para salvar no navegador. Escolha uma menor.', 'error');
+            }
+        };
+        reader.readAsDataURL(file);
+        this.value = ''; // Reseta o input
+    });
+
+    // ============================================
+    // UPLOAD DO FUNDO (Com FileReader e LocalStorage)
+    // ============================================
+    document.getElementById('bg-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const base64Image = event.target.result;
+            
+            try {
+                localStorage.setItem(BG_STORAGE_KEY, base64Image);
+                document.body.style.backgroundImage = `url(${base64Image})`;
+                showToast('✅ Imagem de fundo aplicada!', 'success');
+            } catch (err) {
+                showToast('⚠️ A imagem é muito pesada para salvar no navegador. Escolha uma menor.', 'error');
+            }
+        };
+        reader.readAsDataURL(file);
+        this.value = '';
+    });
+
+    // Remover Fundo
+    function removerFundo() {
+        localStorage.removeItem(BG_STORAGE_KEY);
+        document.body.style.backgroundImage = 'none';
+        showToast('🗑️ Imagem de fundo removida.', 'success');
+    }
+
+    // ============================================
+    // FUNÇÃO: CARREGAR TÍTULO SALVO
+    // ============================================
+    function loadSavedTitle() {
+        try {
+            const saved = localStorage.getItem(TITLE_STORAGE_KEY);
+            if (saved && saved.trim() !== '') {
+                const titleElement = document.getElementById('main-title');
+                const newTitle = saved.trim();
+                
+                if (newTitle.toLowerCase().includes('assistente')) {
+                    const parts = newTitle.split(/Assistente/i);
+                    titleElement.innerHTML = `${parts[0]}<span class="highlight">Assistente</span>${parts[1] || ''}`;
+                } else {
+                    const words = newTitle.trim().split(' ');
+                    if (words.length > 1) {
+                        const lastWord = words.pop();
+                        titleElement.innerHTML = `${words.join(' ')} <span class="highlight">${lastWord}</span>`;
+                    } else {
+                        titleElement.innerHTML = newTitle;
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+
+    // Editar Título
+    function openTitleEditor() {
+        const titleElement = document.getElementById('main-title');
+        const currentText = titleElement.textContent.trim();
+        const cleanText = currentText.replace(/[🎾]/g, '').trim();
+        
+        const input = document.getElementById('titleInput');
+        input.value = cleanText;
+        
+        document.getElementById('titleEditOverlay').classList.add('active');
+        setTimeout(() => input.focus(), 100);
+        input.select();
+    }
+
+    function closeTitleEditor() {
+        document.getElementById('titleEditOverlay').classList.remove('active');
+    }
+
+    function saveTitle() {
+        const input = document.getElementById('titleInput');
+        const newTitle = input.value.trim();
+        
+        if (newTitle === '') {
+            showToast('⚠️ O título não pode ficar vazio!', 'error');
+            return;
+        }
+        
+        const titleElement = document.getElementById('main-title');
+        
+        try { localStorage.setItem(TITLE_STORAGE_KEY, newTitle); } catch (e) {}
+        
+        if (newTitle.toLowerCase().includes('assistente')) {
+            const parts = newTitle.split(/Assistente/i);
+            titleElement.innerHTML = `${parts[0]}<span class="highlight">Assistente</span>${parts[1] || ''}`;
+        } else {
+            const words = newTitle.trim().split(' ');
+            if (words.length > 1) {
+                const lastWord = words.pop();
+                titleElement.innerHTML = `${words.join(' ')} <span class="highlight">${lastWord}</span>`;
+            } else {
+                titleElement.innerHTML = newTitle;
+            }
+        }
+        
+        closeTitleEditor();
+        showToast('✅ Título salvo com sucesso!', 'success');
+    }
+
+    // Inicialização
+    loadSavedTitle();
+    loadSavedImages(); // Carrega as imagens do upload
+
+    // ============================================
+    // CONTADOR E COPIA DE MENSAGENS
+    // ============================================
+    document.querySelectorAll('.script-textarea').forEach(textarea => {
+        const id = textarea.id;
+        const counterId = id.replace('script', 'count');
+        const counter = document.getElementById(counterId);
+
+        if (counter) {
+            counter.textContent = textarea.value.length;
+            textarea.addEventListener('input', function() {
+                counter.textContent = this.value.length;
+                const percent = (this.value.length / (this.maxLength || 1000)) * 100;
+                counter.style.color = percent > 90 ? '#DC2626' : (percent > 70 ? '#FF9800' : 'var(--text-light)');
+            });
+        }
+    });
+
+    function copyText(elementId, button) {
+        const textArea = document.getElementById(elementId);
+        textArea.select();
+        textArea.setSelectionRange(0, 99999);
+        try {
+            document.execCommand('copy');
+            handleCopySuccess(button);
+        } catch (err) {}
+        window.getSelection().removeAllRanges();
+    }
+
+    function handleCopySuccess(button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '✅ Copiado!';
+        button.classList.add('copied');
+        showToast('📋 Mensagem copiada para a área de transferência!', 'success');
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }
+
+    // TOAST
+    let toastTimeout = null;
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').textContent = message;
+        document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : (type === 'error' ? '❌' : '⚠️');
+        toast.className = `toast ${type === 'success' ? 'success' : (type === 'error' ? 'error' : '')}`;
+        toast.classList.add('show');
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // Eventos Fechar
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeTitleEditor();
+        if (e.key === 'Enter' && document.getElementById('titleEditOverlay').classList.contains('active')) saveTitle();
+    });
+    document.getElementById('titleEditOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeTitleEditor();
+    });
+</script>
+</body>
+</html>
