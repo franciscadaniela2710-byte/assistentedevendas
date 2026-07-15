@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual de Cadastro de Leads - Fast Tennis</title>
+    <!-- Importação do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         :root {
             --primary-color: #1E46C5;
@@ -650,6 +653,27 @@
             background: #7C3AED;
             transform: translateY(-1px);
         }
+        
+        .btn-save-text {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--gray-medium);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--white);
+            color: var(--text-medium);
+        }
+
+        .btn-save-text:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
 
         /* TAGS */
         .tags-container {
@@ -817,12 +841,12 @@
                 <img id="logo-img" alt="Logo Fast Tennis">
                 <span class="logo-placeholder" id="logo-text">📷 Clique para<br>anexar Logo</span>
             </div>
-            <span style="font-size: 10px; color: var(--text-light); margin-top: 4px;">As imagens ficam salvas no seu navegador</span>
+            <span style="font-size: 10px; color: var(--text-light); margin-top: 4px;">Salvo automaticamente na Nuvem</span>
             <input type="file" id="logo-upload" accept="image/*" style="display:none;">
         </div>
         <div class="header-title">
             <div class="title-wrapper" onclick="openTitleEditor()" title="Clique para editar o título">
-                <h1 id="main-title">🎾 Manual do <span class="highlight">Assistente</span></h1>
+                <h1 id="main-title">Carregando...</h1>
                 <span class="edit-hint">✏️ Clique para editar</span>
             </div>
             <p>Cadastro de Leads do Site • Operação Comercial</p>
@@ -837,7 +861,7 @@
             <input type="text" id="titleInput" placeholder="Digite o novo título...">
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeTitleEditor()">Cancelar</button>
-                <button class="btn-save" onclick="saveTitle()">Salvar</button>
+                <button class="btn-save" onclick="saveTitle()">Salvar na Nuvem</button>
             </div>
         </div>
     </div>
@@ -927,7 +951,7 @@
             <h2>Fluxo de Abordagem no WhatsApp</h2>
         </div>
         <div class="section-subtitle">
-            ✏️ Clique dentro das caixas para editar o texto das mensagens
+            ✏️ Qualquer alteração feita aqui pode ser salva na nuvem para toda a equipe.
         </div>
 
         <div class="step-card" style="border-left: 4px solid var(--purple);">
@@ -954,6 +978,7 @@ Ficamos muito felizes com seu interesse em conhecer a nossa primeira experiênci
             </div>
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script1', this)">📋 Copiar Mensagem</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script1', 'msg_1', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
 
@@ -970,6 +995,7 @@ Deixa eu te perguntar: as aulas de tênis seriam para você mesmo ou seriam para
             </div>
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script2', this)">📋 Copiar Mensagem</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script2', 'msg_2', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
 
@@ -987,6 +1013,7 @@ Temos algumas unidades e quero ver qual fica mais pertinho e confortável para v
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script3', this)">📋 Copiar Mensagem</button>
                 <button class="btn-unidades" onclick="abrirUnidades()">📍 Consultar Unidades</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script3', 'msg_3', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
 
@@ -1006,6 +1033,7 @@ Fica viável para você nesse local? Se sim, tem interesse em prosseguir com o s
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script4', this)">📋 Copiar Mensagem</button>
                 <button class="btn-unidades" onclick="abrirUnidades()">📍 Consultar Unidades</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script4', 'msg_4', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
 
@@ -1024,6 +1052,28 @@ Fique à vontade para compartilhar, seja qual for o motivo - estou aqui para ouv
             </div>
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script5a', this)">📋 Copiar Mensagem</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script5a', 'msg_5a', this)">💾 Salvar na Nuvem</button>
+            </div>
+        </div>
+
+        <div class="step-card" style="border-left: 4px solid var(--red);">
+            <div class="header-step">
+                <span class="step-badge finalizado">👋 FINALIZAR</span>
+                <span class="step-number">Agradecer e encerrar atendimento</span>
+            </div>
+            <div class="script-wrapper">
+                <textarea class="script-textarea" id="script5b" maxlength="1000">Agradecemos muito pelo seu tempo e pela conversa! Foi um prazer falar com você. 🎾
+
+Caso mude de ideia ou queira saber mais sobre nossas aulas no futuro, estaremos sempre à disposição!
+
+Se precisar de mais alguma informação, pode me chamar a qualquer momento.
+
+Tenha um excelente dia! 💙</textarea>
+                <div class="char-counter"><span id="count5b">0</span>/1000 caracteres</div>
+            </div>
+            <div class="step-actions">
+                <button class="btn-copy" onclick="copyText('script5b', this)">📋 Copiar Mensagem</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script5b', 'msg_5b', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
 
@@ -1044,6 +1094,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
             </div>
             <div class="step-actions">
                 <button class="btn-copy" onclick="copyText('script6', this)">📋 Copiar Mensagem</button>
+                <button class="btn-save-text" onclick="saveMessageToCloud('script6', 'msg_6', this)">💾 Salvar na Nuvem</button>
             </div>
         </div>
     </div>
@@ -1090,7 +1141,6 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
             </div>
         </div>
 
-        <!-- ETIQUETAS MOVIDAS PARA O FINAL -->
         <div class="alert-box purple" style="margin-top: 16px;">
             <span class="alert-icon">🏷️</span>
             <div>
@@ -1120,22 +1170,22 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 
 <script>
     // ============================================
-    // CONFIGURAÇÕES DE LINKS E CHAVES
+    // CONFIGURAÇÕES SUPABASE E LINKS
     // ============================================
-    
-    // 👇 O LINK COMPLETO DO SEU BI HOMOLOGADO ESTÁ AQUI: 👇
     const LINK_BI_UNIDADES = 'https://franciscadaniela2710-byte.github.io/enderecosDeUnidade/'; 
-
-    const TITLE_STORAGE_KEY = 'ft_manual_title';
-    const LOGO_STORAGE_KEY = 'ft_manual_logo';
-    const BG_STORAGE_KEY = 'ft_manual_bg';
+    
+    // Suas credenciais
+    const SUPABASE_URL = 'https://zuywoftltkescpuseltr.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1eXdvZnRsdGtlc2NwdXNlbHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzQ3NzYsImV4cCI6MjA5OTcxMDc3Nn0.cMmH7hPtfmhhWAh_rH651nI4mV0l0jVWjJ0kdoWF6rY';
+    
+    // Inicializar Supabase
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ============================================
-    // ABRIR CONSULTA DE UNIDADES (Atualizada para Web)
+    // ABRIR CONSULTA DE UNIDADES
     // ============================================
     function abrirUnidades() {
         showToast('📍 Abrindo consulta de unidades...', 'success');
-        
         try {
             window.open(LINK_BI_UNIDADES, '_blank');
         } catch (e) {
@@ -1144,73 +1194,150 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     }
 
     // ============================================
-    // CARREGAR IMAGENS SALVAS (LOGO E FUNDO)
+    // ATUALIZAR CONTADORES DE CARACTERES
     // ============================================
-    function loadSavedImages() {
-        // Logo
-        try {
-            const savedLogo = localStorage.getItem(LOGO_STORAGE_KEY);
-            if (savedLogo) {
-                document.getElementById('logo-img').src = savedLogo;
-                document.getElementById('logo-img').style.display = 'block';
-                document.getElementById('logo-text').style.display = 'none';
-            }
-        } catch (e) { console.error('Erro ao carregar logo', e); }
-
-        // Fundo
-        try {
-            const savedBg = localStorage.getItem(BG_STORAGE_KEY);
-            if (savedBg) {
-                document.body.style.backgroundImage = `url(${savedBg})`;
-            }
-        } catch (e) { console.error('Erro ao carregar fundo', e); }
+    function updateCharCount(elementId) {
+        const textarea = document.getElementById(elementId);
+        const counterId = elementId.replace('script', 'count');
+        const counter = document.getElementById(counterId);
+        
+        if (counter && textarea) {
+            counter.textContent = textarea.value.length;
+            const percent = (textarea.value.length / (textarea.maxLength || 1000)) * 100;
+            counter.style.color = percent > 90 ? '#DC2626' : (percent > 70 ? '#FF9800' : 'var(--text-light)');
+        }
     }
 
     // ============================================
-    // UPLOAD DA LOGO (Com FileReader e LocalStorage)
+    // BUSCAR DADOS DO SUPABASE AO ABRIR
+    // ============================================
+    async function loadConfigFromCloud() {
+        try {
+            const { data, error } = await supabase
+                .from('app_config')
+                .select('*')
+                .eq('id', 1)
+                .single();
+
+            if (error) {
+                console.warn('Usando layout padrão.');
+                document.getElementById('main-title').innerHTML = '🎾 Manual do <span class="highlight">Assistente</span>';
+                return;
+            }
+
+            if (data) {
+                // Aplica Título
+                if (data.titulo) updateTitleUI(data.titulo);
+                
+                // Aplica Logo e Fundo
+                if (data.logo) {
+                    document.getElementById('logo-img').src = data.logo;
+                    document.getElementById('logo-img').style.display = 'block';
+                    document.getElementById('logo-text').style.display = 'none';
+                }
+                if (data.fundo) {
+                    document.body.style.backgroundImage = `url(${data.fundo})`;
+                }
+
+                // Aplica as Mensagens (se existirem na nuvem)
+                if (data.msg_1) { document.getElementById('script1').value = data.msg_1; updateCharCount('script1'); }
+                if (data.msg_2) { document.getElementById('script2').value = data.msg_2; updateCharCount('script2'); }
+                if (data.msg_3) { document.getElementById('script3').value = data.msg_3; updateCharCount('script3'); }
+                if (data.msg_4) { document.getElementById('script4').value = data.msg_4; updateCharCount('script4'); }
+                if (data.msg_5a) { document.getElementById('script5a').value = data.msg_5a; updateCharCount('script5a'); }
+                if (data.msg_5b) { document.getElementById('script5b').value = data.msg_5b; updateCharCount('script5b'); }
+                if (data.msg_6) { document.getElementById('script6').value = data.msg_6; updateCharCount('script6'); }
+            }
+        } catch (e) {
+            console.error('Erro na conexão com Supabase:', e);
+            document.getElementById('main-title').innerHTML = '🎾 Manual do <span class="highlight">Assistente</span>';
+        }
+    }
+
+    // ============================================
+    // SALVAR TEXTO DO WHATSAPP NA NUVEM
+    // ============================================
+    async function saveMessageToCloud(elementId, dbColumn, btnElement) {
+        const novoTexto = document.getElementById(elementId).value;
+        const textoOriginalBotao = btnElement.innerHTML;
+        
+        btnElement.innerHTML = '⏳ Salvando...';
+        
+        // Prepara o objeto dinâmico (ex: { msg_1: "Olá..." })
+        const updateData = {};
+        updateData[dbColumn] = novoTexto;
+
+        const { error } = await supabase
+            .from('app_config')
+            .update(updateData)
+            .eq('id', 1);
+
+        if (error) {
+            showToast('❌ Erro ao salvar mensagem.', 'error');
+            btnElement.innerHTML = textoOriginalBotao;
+        } else {
+            showToast('✅ Mensagem salva para toda a equipe!', 'success');
+            btnElement.innerHTML = '✅ Salvo!';
+            setTimeout(() => {
+                btnElement.innerHTML = textoOriginalBotao;
+            }, 2000);
+        }
+    }
+
+    // ============================================
+    // UPLOAD DA LOGO P/ SUPABASE
     // ============================================
     document.getElementById('logo-upload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
+        showToast('⏳ Salvando logo na nuvem...', 'info');
+
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = async function(event) {
             const base64Image = event.target.result;
             
-            try {
-                localStorage.setItem(LOGO_STORAGE_KEY, base64Image);
-                
-                // Aplica visualmente
+            const { error } = await supabase
+                .from('app_config')
+                .update({ logo: base64Image })
+                .eq('id', 1);
+
+            if (error) {
+                showToast('❌ Erro ao salvar logo na nuvem.', 'error');
+            } else {
                 document.getElementById('logo-img').src = base64Image;
                 document.getElementById('logo-img').style.display = 'block';
                 document.getElementById('logo-text').style.display = 'none';
-                
-                showToast('✅ Logo anexada e salva com sucesso!', 'success');
-            } catch (err) {
-                showToast('⚠️ A imagem é muito pesada para salvar no navegador. Escolha uma menor.', 'error');
+                showToast('✅ Logo salva para todos!', 'success');
             }
         };
         reader.readAsDataURL(file);
-        this.value = ''; // Reseta o input
+        this.value = ''; 
     });
 
     // ============================================
-    // UPLOAD DO FUNDO (Com FileReader e LocalStorage)
+    // UPLOAD DO FUNDO P/ SUPABASE
     // ============================================
     document.getElementById('bg-upload').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
+        showToast('⏳ Salvando fundo na nuvem...', 'info');
+
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = async function(event) {
             const base64Image = event.target.result;
             
-            try {
-                localStorage.setItem(BG_STORAGE_KEY, base64Image);
+            const { error } = await supabase
+                .from('app_config')
+                .update({ fundo: base64Image })
+                .eq('id', 1);
+
+            if (error) {
+                showToast('❌ Erro ao salvar fundo na nuvem.', 'error');
+            } else {
                 document.body.style.backgroundImage = `url(${base64Image})`;
-                showToast('✅ Imagem de fundo aplicada!', 'success');
-            } catch (err) {
-                showToast('⚠️ A imagem é muito pesada para salvar no navegador. Escolha uma menor.', 'error');
+                showToast('✅ Fundo salvo para todos!', 'success');
             }
         };
         reader.readAsDataURL(file);
@@ -1218,46 +1345,32 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     });
 
     // Remover Fundo
-    function removerFundo() {
-        localStorage.removeItem(BG_STORAGE_KEY);
-        document.body.style.backgroundImage = 'none';
-        showToast('🗑️ Imagem de fundo removida.', 'success');
+    async function removerFundo() {
+        showToast('⏳ Removendo fundo da nuvem...', 'info');
+        
+        const { error } = await supabase
+            .from('app_config')
+            .update({ fundo: null })
+            .eq('id', 1);
+
+        if (!error) {
+            document.body.style.backgroundImage = 'none';
+            showToast('🗑️ Fundo removido para todos.', 'success');
+        } else {
+            showToast('❌ Erro ao remover.', 'error');
+        }
     }
 
     // ============================================
-    // FUNÇÃO: CARREGAR TÍTULO SALVO
+    // EDITAR E SALVAR TÍTULO P/ SUPABASE
     // ============================================
-    function loadSavedTitle() {
-        try {
-            const saved = localStorage.getItem(TITLE_STORAGE_KEY);
-            if (saved && saved.trim() !== '') {
-                const titleElement = document.getElementById('main-title');
-                const newTitle = saved.trim();
-                
-                if (newTitle.toLowerCase().includes('assistente')) {
-                    const parts = newTitle.split(/Assistente/i);
-                    titleElement.innerHTML = `${parts[0]}<span class="highlight">Assistente</span>${parts[1] || ''}`;
-                } else {
-                    const words = newTitle.trim().split(' ');
-                    if (words.length > 1) {
-                        const lastWord = words.pop();
-                        titleElement.innerHTML = `${words.join(' ')} <span class="highlight">${lastWord}</span>`;
-                    } else {
-                        titleElement.innerHTML = newTitle;
-                    }
-                }
-            }
-        } catch (e) {}
-    }
-
-    // Editar Título
     function openTitleEditor() {
         const titleElement = document.getElementById('main-title');
         const currentText = titleElement.textContent.trim();
         const cleanText = currentText.replace(/[🎾]/g, '').trim();
         
         const input = document.getElementById('titleInput');
-        input.value = cleanText;
+        input.value = cleanText === 'Carregando...' ? '' : cleanText;
         
         document.getElementById('titleEditOverlay').classList.add('active');
         setTimeout(() => input.focus(), 100);
@@ -1268,7 +1381,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         document.getElementById('titleEditOverlay').classList.remove('active');
     }
 
-    function saveTitle() {
+    async function saveTitle() {
         const input = document.getElementById('titleInput');
         const newTitle = input.value.trim();
         
@@ -1276,48 +1389,50 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
             showToast('⚠️ O título não pode ficar vazio!', 'error');
             return;
         }
+
+        showToast('⏳ Salvando título na nuvem...', 'info');
         
+        const { error } = await supabase
+            .from('app_config')
+            .update({ titulo: newTitle })
+            .eq('id', 1);
+
+        if (error) {
+            showToast('❌ Erro ao salvar título.', 'error');
+        } else {
+            updateTitleUI(newTitle);
+            closeTitleEditor();
+            showToast('✅ Título salvo para todos!', 'success');
+        }
+    }
+
+    function updateTitleUI(titleText) {
         const titleElement = document.getElementById('main-title');
-        
-        try { localStorage.setItem(TITLE_STORAGE_KEY, newTitle); } catch (e) {}
-        
-        if (newTitle.toLowerCase().includes('assistente')) {
-            const parts = newTitle.split(/Assistente/i);
+        if (titleText.toLowerCase().includes('assistente')) {
+            const parts = titleText.split(/Assistente/i);
             titleElement.innerHTML = `${parts[0]}<span class="highlight">Assistente</span>${parts[1] || ''}`;
         } else {
-            const words = newTitle.trim().split(' ');
+            const words = titleText.trim().split(' ');
             if (words.length > 1) {
                 const lastWord = words.pop();
                 titleElement.innerHTML = `${words.join(' ')} <span class="highlight">${lastWord}</span>`;
             } else {
-                titleElement.innerHTML = newTitle;
+                titleElement.innerHTML = titleText;
             }
         }
-        
-        closeTitleEditor();
-        showToast('✅ Título salvo com sucesso!', 'success');
     }
 
-    // Inicialização
-    loadSavedTitle();
-    loadSavedImages(); // Carrega as imagens do upload
+    // ============================================
+    // INICIALIZAÇÃO E EVENTOS DE TELA
+    // ============================================
+    loadConfigFromCloud(); 
 
-    // ============================================
-    // CONTADOR E COPIA DE MENSAGENS
-    // ============================================
     document.querySelectorAll('.script-textarea').forEach(textarea => {
         const id = textarea.id;
-        const counterId = id.replace('script', 'count');
-        const counter = document.getElementById(counterId);
-
-        if (counter) {
-            counter.textContent = textarea.value.length;
-            textarea.addEventListener('input', function() {
-                counter.textContent = this.value.length;
-                const percent = (this.value.length / (this.maxLength || 1000)) * 100;
-                counter.style.color = percent > 90 ? '#DC2626' : (percent > 70 ? '#FF9800' : 'var(--text-light)');
-            });
-        }
+        updateCharCount(id); // Inicializa contador
+        textarea.addEventListener('input', function() {
+            updateCharCount(id);
+        });
     });
 
     function copyText(elementId, button) {
@@ -1335,26 +1450,30 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         const originalText = button.innerHTML;
         button.innerHTML = '✅ Copiado!';
         button.classList.add('copied');
-        showToast('📋 Mensagem copiada para a área de transferência!', 'success');
+        showToast('📋 Copiada!', 'success');
         setTimeout(() => {
             button.innerHTML = originalText;
             button.classList.remove('copied');
         }, 2000);
     }
 
-    // TOAST
     let toastTimeout = null;
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         document.getElementById('toast-message').textContent = message;
-        document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : (type === 'error' ? '❌' : '⚠️');
-        toast.className = `toast ${type === 'success' ? 'success' : (type === 'error' ? 'error' : '')}`;
+        
+        let icon = '✅';
+        if (type === 'error') icon = '❌';
+        if (type === 'info') icon = '⏳';
+        
+        document.getElementById('toast-icon').textContent = icon;
+        toast.className = `toast ${type}`;
         toast.classList.add('show');
+        
         if (toastTimeout) clearTimeout(toastTimeout);
         toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // Eventos Fechar
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeTitleEditor();
         if (e.key === 'Enter' && document.getElementById('titleEditOverlay').classList.contains('active')) saveTitle();
