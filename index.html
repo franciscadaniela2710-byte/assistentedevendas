@@ -95,7 +95,7 @@
             bottom: 20px;
             left: 20px;
             z-index: 100;
-            display: none; /* Escondido por padrão */
+            display: none;
             gap: 10px;
         }
 
@@ -156,7 +156,6 @@
             padding: 8px;
         }
 
-        /* Cursor e borda na logo apenas no modo DEV */
         body.dev-mode .logo-container {
             cursor: pointer;
             border: 2px dashed var(--gray-medium);
@@ -184,7 +183,7 @@
         }
 
         body.dev-mode .logo-placeholder {
-            display: block; /* Mostra o aviso de clique apenas para DEV */
+            display: block;
         }
 
         .header-title {
@@ -231,7 +230,7 @@
         }
 
         body.dev-mode .header-title .edit-hint {
-            display: block; /* Mostra aviso de edição só para DEV */
+            display: block;
         }
 
         .header-title p {
@@ -860,22 +859,41 @@
             padding-top: 24px;
             border-top: 2px solid var(--gray-light);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
         }
 
         .footer strong {
             color: var(--primary-color);
         }
 
+        /* BARRA DE STATUS DO BANCO DE DADOS */
+        .db-status-bar {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-medium);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
         .btn-dev-mode {
             background: none;
-            border: none;
-            color: var(--text-light);
+            border: 1px solid var(--gray-light);
+            color: var(--text-medium);
             font-size: 12px;
             cursor: pointer;
-            padding: 4px 8px;
-            margin-top: 8px;
-            border-radius: 4px;
-            transition: background 0.3s;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 600;
         }
 
         .btn-dev-mode:hover {
@@ -1220,9 +1238,15 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 
     </div>
 
-    <!-- FOOTER COM BOTÃO ADMIN -->
+    <!-- FOOTER COM STATUS DO BANCO E BOTÃO ADMIN -->
     <div class="footer">
-        🎾 <strong>Fast Tennis</strong> • Manual Interno de Vendas • Atualizado em 2026<br>
+        <div>🎾 <strong>Fast Tennis</strong> • Manual Interno de Vendas</div>
+        
+        <!-- STATUS DA NUVEM -->
+        <div class="db-status-bar" id="db-status">
+            🟡 Inicializando manual...
+        </div>
+
         <button class="btn-dev-mode" onclick="toggleDevMode()">🔒 Admin</button>
     </div>
 
@@ -1260,90 +1284,121 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 </div>
 
 <!-- ============================================ -->
-<!-- SCRIPT ANTI-CRASH                            -->
+<!-- SCRIPT 100% BLINDADO                         -->
 <!-- ============================================ -->
 <script>
+    // Configurações e Links Globais
     const LINK_BI_UNIDADES = 'https://franciscadaniela2710-byte.github.io/enderecosDeUnidade/'; 
     const SUPABASE_URL = 'https://zuywoftltkescpuseltr.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1eXdvZnRsdGtlc2NwdXNlbHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMzQ3NzYsImV4cCI6MjA5OTcxMDc3Nn0.cMmH7hPtfmhhWAh_rH651nI4mV0l0jVWjJ0kdoWF6rY';
     
-    let supabase = null;
+    let supabaseClient = null;
     let isDevMode = false;
 
-    // Proteção principal: Tenta carregar o Supabase, se falhar, o restante da página ainda funciona
+    // Tenta conectar no banco isoladamente (Não quebra o código se falhar)
     try {
         if (typeof window.supabase !== 'undefined') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
     } catch(err) {
-        console.warn('⚠️ Supabase não pode ser carregado.', err);
+        console.warn('⚠️ Erro ao preparar banco de dados.', err);
     }
 
     // ============================================
-    // ABRIR CONSULTA DE UNIDADES (Anti-bloqueio)
+    // CONTROLE DA BARRA DE STATUS
     // ============================================
-    function abrirUnidades() {
-        showToast('📍 Abrindo consulta de unidades...', 'success');
-        try {
-            const a = document.createElement('a');
-            a.href = LINK_BI_UNIDADES;
-            a.target = '_blank';
-            a.rel = 'noopener noreferrer';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        } catch (e) {
-            showToast('❌ O navegador bloqueou o link.', 'error');
+    function setCloudStatus(state) {
+        const el = document.getElementById('db-status');
+        if (!el) return;
+
+        const agora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const dataHj = new Date().toLocaleDateString('pt-BR');
+
+        if (state === 'loading') {
+            el.innerHTML = '🟡 Sincronizando com a Nuvem...';
+            el.style.color = '#F59E0B';
+            el.style.borderColor = '#FDE68A';
+        } else if (state === 'success') {
+            el.innerHTML = `🟢 Atualizado (${dataHj} às ${agora})`;
+            el.style.color = '#10B981';
+            el.style.borderColor = '#A7F3D0';
+        } else if (state === 'error') {
+            el.innerHTML = '🔴 Modo Offline (Nuvem indisponível)';
+            el.style.color = '#EF4444';
+            el.style.borderColor = '#FECACA';
         }
     }
 
     // ============================================
-    // COPIAR TEXTO (100% Funcional e Robusto)
+    // FUNÇÕES DOS BOTÕES (Consultar, Copiar, Admin)
     // ============================================
-    function copyText(elementId, button) {
+    window.abrirUnidades = function() {
+        showToast('📍 Abrindo consulta de unidades...', 'info');
+        try {
+            window.open(LINK_BI_UNIDADES, '_blank');
+        } catch (e) {
+            showToast('❌ O navegador bloqueou a abertura do link.', 'error');
+        }
+    };
+
+    window.copyText = function(elementId, button) {
         try {
             const textArea = document.getElementById(elementId);
-            const textToCopy = textArea.value;
-            
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    handleCopySuccess(button);
-                }).catch(() => {
-                    fallbackCopy(textArea, button);
-                });
-            } else {
-                fallbackCopy(textArea, button);
-            }
-        } catch(err) {
-            showToast('❌ Erro ao copiar', 'error');
-        }
-    }
-
-    function fallbackCopy(textArea, button) {
-        try {
+            // Método super antigo e à prova de falhas para copiar texto:
             textArea.select();
-            textArea.setSelectionRange(0, 99999);
+            textArea.setSelectionRange(0, 99999); 
             document.execCommand('copy');
-            window.getSelection().removeAllRanges();
-            handleCopySuccess(button);
-        } catch(e) {
-            showToast('❌ Falha ao copiar', 'error');
+            window.getSelection().removeAllRanges(); // Tira a seleção visual
+            
+            // Retorno visual
+            const originalText = button.innerHTML;
+            button.innerHTML = '✅ Copiado!';
+            button.classList.add('copied');
+            showToast('📋 Copiada para a área de transferência!', 'success');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        } catch(err) {
+            showToast('❌ Ocorreu um erro ao copiar. Copie manualmente.', 'error');
         }
-    }
+    };
 
-    function handleCopySuccess(button) {
-        const originalText = button.innerHTML;
-        button.innerHTML = '✅ Copiado!';
-        button.classList.add('copied');
-        showToast('📋 Copiada para a área de transferência!', 'success');
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.classList.remove('copied');
-        }, 2000);
-    }
+    window.toggleDevMode = function() {
+        if (isDevMode) {
+            isDevMode = false;
+            document.body.classList.remove('dev-mode');
+            document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = true);
+            showToast('🔒 Modo de visualização ativado.', 'info');
+        } else {
+            document.getElementById('devAuthModal').classList.add('active');
+            document.getElementById('devPasswordInput').value = '';
+            setTimeout(() => document.getElementById('devPasswordInput').focus(), 100);
+        }
+    };
+
+    window.closeDevModal = function() {
+        document.getElementById('devAuthModal').classList.remove('active');
+    };
+
+    window.verifyDevPassword = function() {
+        const pwd = document.getElementById('devPasswordInput').value;
+        if (pwd === 'fast2026') {
+            isDevMode = true;
+            document.body.classList.add('dev-mode');
+            document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = false);
+            closeDevModal();
+            showToast('🔓 Modo de edição liberado!', 'success');
+        } else {
+            showToast('❌ Senha incorreta.', 'error');
+            document.getElementById('devPasswordInput').value = '';
+            document.getElementById('devPasswordInput').focus();
+        }
+    };
 
     // ============================================
-    // ATUALIZAR CONTADORES DE CARACTERES
+    // ATUALIZAR CONTADORES
     // ============================================
     function updateCharCount(elementId) {
         const textarea = document.getElementById(elementId);
@@ -1358,13 +1413,20 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     }
 
     // ============================================
-    // BUSCAR DADOS DO SUPABASE (Somente se ativo)
+    // SINCRONIZAÇÃO COM A NUVEM
     // ============================================
     async function loadConfigFromCloud() {
-        if (!supabase) return; 
+        if (!supabaseClient) {
+            setCloudStatus('error');
+            return;
+        }
+        
+        setCloudStatus('loading');
         
         try {
-            const { data, error } = await supabase.from('app_config').select('*').eq('id', 1).single();
+            const { data, error } = await supabaseClient.from('app_config').select('*').eq('id', 1).single();
+            if (error) throw error;
+
             if (data) {
                 if (data.titulo) updateTitleUI(data.titulo);
                 if (data.logo) {
@@ -1380,72 +1442,44 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
                 if (data.msg_5a) { document.getElementById('script5a').value = data.msg_5a; updateCharCount('script5a'); }
                 if (data.msg_5b) { document.getElementById('script5b').value = data.msg_5b; updateCharCount('script5b'); }
                 if (data.msg_6) { document.getElementById('script6').value = data.msg_6; updateCharCount('script6'); }
+                
+                setCloudStatus('success');
             }
         } catch (e) {
-            console.warn('Usando textos padrões locais.');
+            console.warn('Erro na nuvem. Usando local.', e);
+            setCloudStatus('error');
         }
     }
 
     // ============================================
-    // MODO DESENVOLVEDOR (SENHA E TOGGLE)
+    // FUNÇÕES DE SALVAR NA NUVEM (MODO DEV)
     // ============================================
-    function toggleDevMode() {
-        if (isDevMode) {
-            isDevMode = false;
-            document.body.classList.remove('dev-mode');
-            document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = true);
-            showToast('🔒 Modo de visualização ativado.', 'info');
-        } else {
-            document.getElementById('devAuthModal').classList.add('active');
-            document.getElementById('devPasswordInput').value = '';
-            setTimeout(() => document.getElementById('devPasswordInput').focus(), 100);
-        }
-    }
-
-    function closeDevModal() {
-        document.getElementById('devAuthModal').classList.remove('active');
-    }
-
-    function verifyDevPassword() {
-        const pwd = document.getElementById('devPasswordInput').value;
-        if (pwd === 'fast2026') {
-            isDevMode = true;
-            document.body.classList.add('dev-mode');
-            document.querySelectorAll('.script-textarea').forEach(ta => ta.readOnly = false);
-            closeDevModal();
-            showToast('🔓 Modo de edição liberado!', 'success');
-        } else {
-            showToast('❌ Senha incorreta.', 'error');
-            document.getElementById('devPasswordInput').value = '';
-            document.getElementById('devPasswordInput').focus();
-        }
-    }
-
-    // ============================================
-    // UPLOAD E AÇÕES NA NUVEM
-    // ============================================
-    function triggerLogoUpload() {
+    window.triggerLogoUpload = function() {
         if (!isDevMode) return; 
         document.getElementById('logo-upload').click();
-    }
+    };
 
     document.getElementById('logo-upload').addEventListener('change', function(e) {
-        if (!supabase) return showToast('❌ Conexão indisponível.', 'error');
+        if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
         const file = e.target.files[0];
         if (!file) return;
 
-        showToast('⏳ Salvando logo na nuvem...', 'info');
+        showToast('⏳ Salvando logo...', 'info');
+        setCloudStatus('loading');
+        
         const reader = new FileReader();
         reader.onload = async function(event) {
             const base64Image = event.target.result;
-            const { error } = await supabase.from('app_config').update({ logo: base64Image }).eq('id', 1);
+            const { error } = await supabaseClient.from('app_config').update({ logo: base64Image }).eq('id', 1);
             if (error) {
                 showToast('❌ Erro ao salvar logo.', 'error');
+                setCloudStatus('error');
             } else {
                 document.getElementById('logo-img').src = base64Image;
                 document.getElementById('logo-img').style.display = 'block';
                 document.getElementById('logo-text').style.display = 'none';
-                showToast('✅ Logo salva para todos!', 'success');
+                showToast('✅ Logo salva!', 'success');
+                setCloudStatus('success');
             }
         };
         reader.readAsDataURL(file);
@@ -1453,63 +1487,76 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     });
 
     document.getElementById('bg-upload').addEventListener('change', function(e) {
-        if (!supabase) return showToast('❌ Conexão indisponível.', 'error');
+        if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
         const file = e.target.files[0];
         if (!file) return;
 
-        showToast('⏳ Salvando fundo na nuvem...', 'info');
+        showToast('⏳ Salvando fundo...', 'info');
+        setCloudStatus('loading');
+        
         const reader = new FileReader();
         reader.onload = async function(event) {
             const base64Image = event.target.result;
-            const { error } = await supabase.from('app_config').update({ fundo: base64Image }).eq('id', 1);
+            const { error } = await supabaseClient.from('app_config').update({ fundo: base64Image }).eq('id', 1);
             if (error) {
                 showToast('❌ Erro ao salvar fundo.', 'error');
+                setCloudStatus('error');
             } else {
                 document.body.style.backgroundImage = `url(${base64Image})`;
-                showToast('✅ Fundo salvo para todos!', 'success');
+                showToast('✅ Fundo salvo!', 'success');
+                setCloudStatus('success');
             }
         };
         reader.readAsDataURL(file);
         this.value = '';
     });
 
-    async function removerFundo() {
-        if (!supabase) return showToast('❌ Conexão indisponível.', 'error');
+    window.removerFundo = async function() {
+        if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
         showToast('⏳ Removendo fundo...', 'info');
-        const { error } = await supabase.from('app_config').update({ fundo: null }).eq('id', 1);
+        setCloudStatus('loading');
+        
+        const { error } = await supabaseClient.from('app_config').update({ fundo: null }).eq('id', 1);
         if (!error) {
             document.body.style.backgroundImage = 'none';
             showToast('🗑️ Fundo removido.', 'success');
+            setCloudStatus('success');
         } else {
             showToast('❌ Erro ao remover.', 'error');
+            setCloudStatus('error');
         }
-    }
+    };
 
-    async function saveMessageToCloud(elementId, dbColumn, btnElement) {
-        if (!supabase) return showToast('❌ Conexão indisponível.', 'error');
+    window.saveMessageToCloud = async function(elementId, dbColumn, btnElement) {
+        if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
+        
         const novoTexto = document.getElementById(elementId).value;
         const textoOriginalBotao = btnElement.innerHTML;
+        
         btnElement.innerHTML = '⏳ Salvando...';
+        setCloudStatus('loading');
         
         const updateData = {};
         updateData[dbColumn] = novoTexto;
 
-        const { error } = await supabase.from('app_config').update(updateData).eq('id', 1);
+        const { error } = await supabaseClient.from('app_config').update(updateData).eq('id', 1);
 
         if (error) {
             showToast('❌ Erro ao salvar.', 'error');
             btnElement.innerHTML = textoOriginalBotao;
+            setCloudStatus('error');
         } else {
-            showToast('✅ Salvo para toda a equipe!', 'success');
+            showToast('✅ Salvo na Nuvem!', 'success');
+            setCloudStatus('success');
             btnElement.innerHTML = '✅ Salvo!';
             setTimeout(() => { btnElement.innerHTML = textoOriginalBotao; }, 2000);
         }
-    }
+    };
 
     // ============================================
     // EDITAR TÍTULO
     // ============================================
-    function openTitleEditor() {
+    window.openTitleEditor = function() {
         if (!isDevMode) return; 
         const titleElement = document.getElementById('main-title');
         const currentText = titleElement.textContent.trim();
@@ -1519,34 +1566,38 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         document.getElementById('titleEditOverlay').classList.add('active');
         setTimeout(() => input.focus(), 100);
         input.select();
-    }
+    };
 
-    function closeTitleEditor() {
+    window.closeTitleEditor = function() {
         document.getElementById('titleEditOverlay').classList.remove('active');
-    }
+    };
 
-    async function saveTitle() {
+    window.saveTitle = async function() {
         const input = document.getElementById('titleInput');
         const newTitle = input.value.trim();
         if (newTitle === '') return showToast('⚠️ O título não pode ficar vazio!', 'error');
 
-        if (!supabase) {
+        if (!supabaseClient) {
             updateTitleUI(newTitle);
             closeTitleEditor();
             return showToast('⚠️ Sem conexão. Alterado apenas localmente.', 'info');
         }
 
         showToast('⏳ Salvando título...', 'info');
-        const { error } = await supabase.from('app_config').update({ titulo: newTitle }).eq('id', 1);
+        setCloudStatus('loading');
+        
+        const { error } = await supabaseClient.from('app_config').update({ titulo: newTitle }).eq('id', 1);
 
         if (error) {
             showToast('❌ Erro ao salvar título.', 'error');
+            setCloudStatus('error');
         } else {
             updateTitleUI(newTitle);
             closeTitleEditor();
-            showToast('✅ Título salvo para todos!', 'success');
+            showToast('✅ Título salvo!', 'success');
+            setCloudStatus('success');
         }
-    }
+    };
 
     function updateTitleUI(titleText) {
         const titleElement = document.getElementById('main-title');
@@ -1565,10 +1616,10 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     }
 
     // ============================================
-    // TOAST NOTIFICATIONS E INICIALIZAÇÃO
+    // TOAST NOTIFICATIONS E EVENTOS DE INÍCIO
     // ============================================
     let toastTimeout = null;
-    function showToast(message, type = 'success') {
+    window.showToast = function(message, type = 'success') {
         const toast = document.getElementById('toast');
         document.getElementById('toast-message').textContent = message;
         let icon = '✅';
@@ -1579,14 +1630,16 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         toast.classList.add('show');
         if (toastTimeout) clearTimeout(toastTimeout);
         toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
-    }
+    };
 
+    // Prepara Contadores das Caixas de Texto
     document.querySelectorAll('.script-textarea').forEach(textarea => {
         const id = textarea.id;
         updateCharCount(id);
         textarea.addEventListener('input', function() { updateCharCount(id); });
     });
 
+    // Teclas de atalho para fechar/salvar
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeTitleEditor();
@@ -1602,7 +1655,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         if (e.target === this) closeDevModal();
     });
 
-    // Puxa da Nuvem
+    // Iniciar
     loadConfigFromCloud(); 
 
 </script>
