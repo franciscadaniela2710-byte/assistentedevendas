@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- CÓDIGO ANTI-CACHE: Obriga o navegador a sempre baixar a versão mais recente -->
+    <!-- CÓDIGO ANTI-CACHE -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
     <title>Manual de Cadastro de Leads - Fast Tennis</title>
+    
+    <!-- Link para o Favicon Dinâmico -->
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="data:,">
     
     <!-- Importação do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -47,12 +50,12 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
-        body {
+body {
             background-color: var(--bg-color);
             background-repeat: no-repeat;
-            background-position: bottom right;
-            background-attachment: fixed;
-            background-size: 50% auto;
+            background-position: center center; /* Centraliza a imagem */
+            background-attachment: fixed; /* Deixa o fundo fixo enquanto a tela rola */
+            background-size: cover; /* Estica a imagem para cobrir a tela inteira sem cortar */
             min-height: 100vh;
             padding: 24px;
             transition: background-image 0.3s ease;
@@ -85,42 +88,6 @@
             display: inline-flex !important;
         }
 
-        body.dev-mode .bg-controls {
-            display: flex !important;
-        }
-
-        /* UPLOAD DE FUNDO (SÓ DEV) */
-        .bg-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 100;
-            display: none;
-            gap: 10px;
-        }
-
-        .btn-upload-bg {
-            background: var(--white);
-            border: 1px solid var(--gray-light);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-medium);
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-upload-bg:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
         /* HEADER & LOGO */
         .header {
             display: flex;
@@ -141,30 +108,27 @@
             align-items: center;
         }
 
+        /* Campo de Logo muito mais limpo */
         .logo-container {
             width: 200px;
             min-height: 70px;
             border: none;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
             background: transparent;
             position: relative;
             transition: var(--transition);
-            padding: 8px;
         }
 
         body.dev-mode .logo-container {
             cursor: pointer;
-            border: 2px dashed var(--gray-medium);
+            border-radius: 8px;
         }
 
         body.dev-mode .logo-container:hover {
             background: var(--primary-light);
             transform: scale(1.02);
-            border-color: var(--primary-color);
         }
 
         .logo-container img {
@@ -283,7 +247,7 @@
             margin-bottom: 16px;
         }
 
-        .modal-box input {
+        .modal-box input[type="text"], .modal-box input[type="password"] {
             width: 100%;
             padding: 10px 14px;
             border: 2px solid var(--border-color);
@@ -332,6 +296,73 @@
 
         .btn-cancel:hover {
             background: #C0C0C0;
+        }
+
+        /* PAINEL DE AJUSTES VISUAIS (NOVO) */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: var(--bg-color);
+        }
+        
+        .settings-info strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .settings-info span {
+            font-size: 11px;
+            color: var(--text-medium);
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-mini.edit {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .btn-mini.edit:hover { background: #D1DBF5; }
+
+        .btn-mini.delete {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .btn-mini.delete:hover { background: #FECACA; }
+
+        .floating-admin-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 100;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* JORNADA DO LEAD */
@@ -636,11 +667,11 @@
             background: var(--white);
         }
         
-        /* Textarea protegida no modo visualização */
         .script-textarea[readonly] {
             cursor: text; 
             background: var(--bg-color);
         }
+        
         .script-textarea[readonly]:focus {
             box-shadow: none;
             border-color: var(--gray-light);
@@ -910,37 +941,30 @@
             .jornada-arrow { transform: rotate(90deg); padding: 4px 0; }
             .crm-grid { grid-template-columns: 1fr; }
             .toast { bottom: 16px; right: 16px; left: 16px; }
+            .floating-admin-btn { bottom: 16px; left: 16px; padding: 10px 16px; }
         }
     </style>
 </head>
 <body>
 
-<!-- BOTÕES FIXOS DE UPLOAD (SÓ APARECEM NO MODO DEV) -->
-<div class="bg-controls dev-only">
-    <button class="btn-upload-bg" onclick="document.getElementById('bg-upload').click()" title="Alterar Fundo da Tela">
-        🖼️ Alterar Fundo
-    </button>
-    <button class="btn-upload-bg" onclick="removerFundo()" title="Remover Fundo da Tela" style="padding: 8px;">
-        🗑️
-    </button>
-</div>
-<input type="file" id="bg-upload" accept="image/*" style="display:none;">
+<!-- BOTÃO FLUTUANTE DE CONFIGURAÇÕES (SÓ APARECE NO MODO DEV) -->
+<button class="btn-primary-action dev-only floating-admin-btn" onclick="openAdminSettings()">
+    ⚙️ Ajustes Visuais
+</button>
 
 <div class="container">
     
-    <!-- HEADER & UPLOAD DE LOGO -->
+    <!-- HEADER & LOGO -->
     <div class="header">
         <div class="logo-area">
-            <div class="logo-container" onclick="triggerLogoUpload()" title="Clique para anexar sua Logo">
+            <!-- A logo agora fica 100% limpa. Clicar nela no modo DEV abre o painel de Ajustes -->
+            <div class="logo-container" onclick="openAdminSettings()" title="Clique para abrir as configurações visuais">
                 <img id="logo-img" alt="Logo Fast Tennis">
-                <span class="logo-placeholder dev-only" id="logo-text">📷 Clique para<br>anexar Logo</span>
+                <span class="logo-placeholder dev-only" id="logo-text">⚙️ Configurar Logo</span>
             </div>
-            <span class="dev-only" style="font-size: 10px; color: var(--text-light); margin-top: 4px;">Salvo automaticamente na Nuvem</span>
-            <input type="file" id="logo-upload" accept="image/*" style="display:none;">
         </div>
         <div class="header-title">
             <div class="title-wrapper" onclick="openTitleEditor()" title="Clique para editar o título">
-                <!-- TÍTULO PADRÃO GARANTIDO -->
                 <h1 id="main-title">🎾 Manual do <span class="highlight">Assistente</span></h1>
                 <span class="edit-hint dev-only">✏️ Clique para editar</span>
             </div>
@@ -1053,7 +1077,6 @@
                 <span class="step-number">Coletar Nome</span>
             </div>
             <div class="script-wrapper">
-                <!-- Textareas possuem o atributo readonly por padrão -->
                 <textarea class="script-textarea" id="script1" maxlength="1000" readonly>Olá! Tudo bem? Seja muito bem-vindo(a) à Fast Tennis! 🎾
 
 Ficamos muito felizes com seu interesse em conhecer a nossa primeira experiência! Para começarmos o seu atendimento, poderia me informar o seu nome completo?</textarea>
@@ -1254,6 +1277,8 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
 
 
 <!-- MODAIS GARANTIDOS POR CIMA DE TUDO -->
+
+<!-- MODAL: SENHA DESENVOLVEDOR -->
 <div class="modal-overlay" id="devAuthModal">
     <div class="modal-box">
         <h3>🔒 Modo Administrador</h3>
@@ -1266,6 +1291,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     </div>
 </div>
 
+<!-- MODAL: EDITAR TÍTULO -->
 <div class="modal-overlay" id="titleEditOverlay">
     <div class="modal-box">
         <h3>✏️ Editar Título</h3>
@@ -1278,13 +1304,66 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     </div>
 </div>
 
+<!-- NOVO MODAL: CONFIGURAÇÕES VISUAIS DA NUVEM -->
+<div class="modal-overlay" id="adminSettingsModal">
+    <div class="modal-box">
+        <h3>⚙️ Ajustes Visuais</h3>
+        <div class="sub">Altere as imagens do manual. Elas serão salvas na nuvem para toda a equipe.</div>
+        
+        <!-- Favicon -->
+        <div class="settings-row">
+            <div class="settings-info">
+                <strong>Favicon</strong>
+                <span>Ícone da aba do navegador</span>
+            </div>
+            <div class="settings-actions">
+                <button class="btn-mini edit" onclick="triggerUpload('favicon')">Anexar</button>
+                <button class="btn-mini delete" onclick="handleRemove('favicon', 'Favicon removido')">Remover</button>
+            </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="settings-row">
+            <div class="settings-info">
+                <strong>Logotipo</strong>
+                <span>Fica no cabeçalho do manual</span>
+            </div>
+            <div class="settings-actions">
+                <button class="btn-mini edit" onclick="triggerUpload('logo')">Anexar</button>
+                <button class="btn-mini delete" onclick="handleRemove('logo', 'Logo removida')">Remover</button>
+            </div>
+        </div>
+
+        <!-- Fundo -->
+        <div class="settings-row">
+            <div class="settings-info">
+                <strong>Plano de Fundo</strong>
+                <span>Imagem decorativa da tela</span>
+            </div>
+            <div class="settings-actions">
+                <button class="btn-mini edit" onclick="triggerUpload('fundo')">Anexar</button>
+                <button class="btn-mini delete" onclick="handleRemove('fundo', 'Fundo removido')">Remover</button>
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button class="btn-cancel" onclick="closeAdminSettings()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<!-- INPUTS INVISÍVEIS PARA UPLOAD -->
+<input type="file" id="favicon-upload" accept="image/*" style="display:none;" onchange="handleUpload(event, 'favicon', 'Favicon salvo!')">
+<input type="file" id="logo-upload" accept="image/*" style="display:none;" onchange="handleUpload(event, 'logo', 'Logo salva!')">
+<input type="file" id="fundo-upload" accept="image/*" style="display:none;" onchange="handleUpload(event, 'fundo', 'Fundo salvo!')">
+
 <div class="toast" id="toast">
     <span id="toast-icon">✅</span>
     <span id="toast-message">Mensagem copiada!</span>
 </div>
 
 <!-- ============================================ -->
-<!-- SCRIPT 100% BLINDADO                         -->
+<!-- SCRIPT ROBUSTO E OTIMIZADO                   -->
 <!-- ============================================ -->
 <script>
     // Configurações e Links Globais
@@ -1330,12 +1409,18 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     }
 
     // ============================================
-    // FUNÇÕES DOS BOTÕES (Consultar, Copiar, Admin)
+    // FUNÇÕES DOS BOTÕES (Consultar, Copiar)
     // ============================================
     window.abrirUnidades = function() {
-        showToast('📍 Abrindo consulta de unidades...', 'info');
+        showToast('📍 Abrindo consulta...', 'info');
         try {
-            window.open(LINK_BI_UNIDADES, '_blank');
+            const a = document.createElement('a');
+            a.href = LINK_BI_UNIDADES;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         } catch (e) {
             showToast('❌ O navegador bloqueou a abertura do link.', 'error');
         }
@@ -1344,13 +1429,11 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     window.copyText = function(elementId, button) {
         try {
             const textArea = document.getElementById(elementId);
-            // Método super antigo e à prova de falhas para copiar texto:
             textArea.select();
             textArea.setSelectionRange(0, 99999); 
             document.execCommand('copy');
-            window.getSelection().removeAllRanges(); // Tira a seleção visual
+            window.getSelection().removeAllRanges(); 
             
-            // Retorno visual
             const originalText = button.innerHTML;
             button.innerHTML = '✅ Copiado!';
             button.classList.add('copied');
@@ -1365,6 +1448,9 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         }
     };
 
+    // ============================================
+    // MODO ADMIN / DESENVOLVEDOR
+    // ============================================
     window.toggleDevMode = function() {
         if (isDevMode) {
             isDevMode = false;
@@ -1378,9 +1464,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         }
     };
 
-    window.closeDevModal = function() {
-        document.getElementById('devAuthModal').classList.remove('active');
-    };
+    window.closeDevModal = function() { document.getElementById('devAuthModal').classList.remove('active'); };
 
     window.verifyDevPassword = function() {
         const pwd = document.getElementById('devPasswordInput').value;
@@ -1398,135 +1482,97 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     };
 
     // ============================================
-    // ATUALIZAR CONTADORES
+    // GESTÃO VISUAL UNIFICADA (NOVO MODAL ADMIN)
     // ============================================
-    function updateCharCount(elementId) {
-        const textarea = document.getElementById(elementId);
-        const counterId = elementId.replace('script', 'count');
-        const counter = document.getElementById(counterId);
-        
-        if (counter && textarea) {
-            counter.textContent = textarea.value.length;
-            const percent = (textarea.value.length / (textarea.maxLength || 1000)) * 100;
-            counter.style.color = percent > 90 ? '#DC2626' : (percent > 70 ? '#FF9800' : 'var(--text-light)');
-        }
-    }
-
-    // ============================================
-    // SINCRONIZAÇÃO COM A NUVEM
-    // ============================================
-    async function loadConfigFromCloud() {
-        if (!supabaseClient) {
-            setCloudStatus('error');
-            return;
-        }
-        
-        setCloudStatus('loading');
-        
-        try {
-            const { data, error } = await supabaseClient.from('app_config').select('*').eq('id', 1).single();
-            if (error) throw error;
-
-            if (data) {
-                if (data.titulo) updateTitleUI(data.titulo);
-                if (data.logo) {
-                    document.getElementById('logo-img').src = data.logo;
-                    document.getElementById('logo-img').style.display = 'block';
-                    document.getElementById('logo-text').style.display = 'none';
-                }
-                if (data.fundo) document.body.style.backgroundImage = `url(${data.fundo})`;
-                if (data.msg_1) { document.getElementById('script1').value = data.msg_1; updateCharCount('script1'); }
-                if (data.msg_2) { document.getElementById('script2').value = data.msg_2; updateCharCount('script2'); }
-                if (data.msg_3) { document.getElementById('script3').value = data.msg_3; updateCharCount('script3'); }
-                if (data.msg_4) { document.getElementById('script4').value = data.msg_4; updateCharCount('script4'); }
-                if (data.msg_5a) { document.getElementById('script5a').value = data.msg_5a; updateCharCount('script5a'); }
-                if (data.msg_5b) { document.getElementById('script5b').value = data.msg_5b; updateCharCount('script5b'); }
-                if (data.msg_6) { document.getElementById('script6').value = data.msg_6; updateCharCount('script6'); }
-                
-                setCloudStatus('success');
-            }
-        } catch (e) {
-            console.warn('Erro na nuvem. Usando local.', e);
-            setCloudStatus('error');
-        }
-    }
-
-    // ============================================
-    // FUNÇÕES DE SALVAR NA NUVEM (MODO DEV)
-    // ============================================
-    window.triggerLogoUpload = function() {
-        if (!isDevMode) return; 
-        document.getElementById('logo-upload').click();
+    window.openAdminSettings = function() {
+        if (!isDevMode) return;
+        document.getElementById('adminSettingsModal').classList.add('active');
     };
 
-    document.getElementById('logo-upload').addEventListener('change', function(e) {
+    window.closeAdminSettings = function() {
+        document.getElementById('adminSettingsModal').classList.remove('active');
+    };
+
+    window.triggerUpload = function(type) {
+        if (!isDevMode) return;
+        document.getElementById(type + '-upload').click();
+    };
+
+    // Função unificada para UPLOAD de Imagens (Logo, Fundo, Favicon)
+    window.handleUpload = async function(event, dbColumn, successMsg) {
         if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
-        const file = e.target.files[0];
+        const file = event.target.files[0];
         if (!file) return;
 
-        showToast('⏳ Salvando logo...', 'info');
+        showToast(`⏳ Salvando imagem...`, 'info');
         setCloudStatus('loading');
         
         const reader = new FileReader();
-        reader.onload = async function(event) {
-            const base64Image = event.target.result;
-            const { error } = await supabaseClient.from('app_config').update({ logo: base64Image }).eq('id', 1);
+        reader.onload = async function(e) {
+            const base64Image = e.target.result;
+            const updateData = {};
+            updateData[dbColumn] = base64Image;
+
+            const { error } = await supabaseClient.from('app_config').update(updateData).eq('id', 1);
+            
             if (error) {
-                showToast('❌ Erro ao salvar logo.', 'error');
+                showToast(`❌ Erro ao salvar imagem.`, 'error');
                 setCloudStatus('error');
             } else {
-                document.getElementById('logo-img').src = base64Image;
-                document.getElementById('logo-img').style.display = 'block';
-                document.getElementById('logo-text').style.display = 'none';
-                showToast('✅ Logo salva!', 'success');
+                showToast(`✅ ${successMsg}`, 'success');
                 setCloudStatus('success');
+                applyVisualChange(dbColumn, base64Image);
             }
         };
         reader.readAsDataURL(file);
-        this.value = ''; 
-    });
+        event.target.value = ''; // Limpa o input
+    };
 
-    document.getElementById('bg-upload').addEventListener('change', function(e) {
+    // Função unificada para REMOVER Imagens
+    window.handleRemove = async function(dbColumn, successMsg) {
         if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
-        const file = e.target.files[0];
-        if (!file) return;
-
-        showToast('⏳ Salvando fundo...', 'info');
+        
+        showToast(`⏳ Removendo imagem...`, 'info');
         setCloudStatus('loading');
         
-        const reader = new FileReader();
-        reader.onload = async function(event) {
-            const base64Image = event.target.result;
-            const { error } = await supabaseClient.from('app_config').update({ fundo: base64Image }).eq('id', 1);
-            if (error) {
-                showToast('❌ Erro ao salvar fundo.', 'error');
-                setCloudStatus('error');
-            } else {
-                document.body.style.backgroundImage = `url(${base64Image})`;
-                showToast('✅ Fundo salvo!', 'success');
-                setCloudStatus('success');
-            }
-        };
-        reader.readAsDataURL(file);
-        this.value = '';
-    });
+        const updateData = {};
+        updateData[dbColumn] = null;
 
-    window.removerFundo = async function() {
-        if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
-        showToast('⏳ Removendo fundo...', 'info');
-        setCloudStatus('loading');
+        const { error } = await supabaseClient.from('app_config').update(updateData).eq('id', 1);
         
-        const { error } = await supabaseClient.from('app_config').update({ fundo: null }).eq('id', 1);
-        if (!error) {
-            document.body.style.backgroundImage = 'none';
-            showToast('🗑️ Fundo removido.', 'success');
-            setCloudStatus('success');
+        if (error) {
+            showToast(`❌ Erro ao remover.`, 'error');
+            setCloudStatus('error');
         } else {
-            showToast('❌ Erro ao remover.', 'error');
-            setCloudStatus('error');
+            showToast(`🗑️ ${successMsg}`, 'success');
+            setCloudStatus('success');
+            applyVisualChange(dbColumn, null);
         }
     };
 
+    // Aplica a mudança na tela em tempo real
+    function applyVisualChange(column, value) {
+        if (column === 'logo') {
+            const img = document.getElementById('logo-img');
+            const txt = document.getElementById('logo-text');
+            if (value) {
+                img.src = value; img.style.display = 'block'; txt.style.display = 'none';
+            } else {
+                img.src = ''; img.style.display = 'none'; txt.style.display = 'block';
+            }
+        }
+        if (column === 'fundo') {
+            document.body.style.backgroundImage = value ? `url(${value})` : 'none';
+        }
+        if (column === 'favicon') {
+            let link = document.getElementById('dynamic-favicon');
+            link.href = value || 'data:,';
+        }
+    }
+
+    // ============================================
+    // SALVAR MENSAGEM WHATSAPP
+    // ============================================
     window.saveMessageToCloud = async function(elementId, dbColumn, btnElement) {
         if (!supabaseClient) return showToast('❌ Conexão indisponível.', 'error');
         
@@ -1568,9 +1614,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         input.select();
     };
 
-    window.closeTitleEditor = function() {
-        document.getElementById('titleEditOverlay').classList.remove('active');
-    };
+    window.closeTitleEditor = function() { document.getElementById('titleEditOverlay').classList.remove('active'); };
 
     window.saveTitle = async function() {
         const input = document.getElementById('titleInput');
@@ -1580,7 +1624,7 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         if (!supabaseClient) {
             updateTitleUI(newTitle);
             closeTitleEditor();
-            return showToast('⚠️ Sem conexão. Alterado apenas localmente.', 'info');
+            return showToast('⚠️ Sem conexão. Alterado localmente.', 'info');
         }
 
         showToast('⏳ Salvando título...', 'info');
@@ -1616,7 +1660,41 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
     }
 
     // ============================================
-    // TOAST NOTIFICATIONS E EVENTOS DE INÍCIO
+    // INICIALIZAÇÃO DA NUVEM
+    // ============================================
+    async function loadConfigFromCloud() {
+        if (!supabaseClient) {
+            setCloudStatus('error');
+            return;
+        }
+        setCloudStatus('loading');
+        try {
+            const { data, error } = await supabaseClient.from('app_config').select('*').eq('id', 1).single();
+            if (error) throw error;
+            if (data) {
+                if (data.titulo) updateTitleUI(data.titulo);
+                applyVisualChange('logo', data.logo);
+                applyVisualChange('fundo', data.fundo);
+                applyVisualChange('favicon', data.favicon);
+
+                if (data.msg_1) { document.getElementById('script1').value = data.msg_1; updateCharCount('script1'); }
+                if (data.msg_2) { document.getElementById('script2').value = data.msg_2; updateCharCount('script2'); }
+                if (data.msg_3) { document.getElementById('script3').value = data.msg_3; updateCharCount('script3'); }
+                if (data.msg_4) { document.getElementById('script4').value = data.msg_4; updateCharCount('script4'); }
+                if (data.msg_5a) { document.getElementById('script5a').value = data.msg_5a; updateCharCount('script5a'); }
+                if (data.msg_5b) { document.getElementById('script5b').value = data.msg_5b; updateCharCount('script5b'); }
+                if (data.msg_6) { document.getElementById('script6').value = data.msg_6; updateCharCount('script6'); }
+                
+                setCloudStatus('success');
+            }
+        } catch (e) {
+            console.warn('Erro na nuvem. Usando local.', e);
+            setCloudStatus('error');
+        }
+    }
+
+    // ============================================
+    // TOAST NOTIFICATIONS
     // ============================================
     let toastTimeout = null;
     window.showToast = function(message, type = 'success') {
@@ -1632,27 +1710,41 @@ Caso contrário, a Fast Tennis te agradece e deseja um excelente dia! Nos vemos 
         toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
     };
 
-    // Prepara Contadores das Caixas de Texto
-    document.querySelectorAll('.script-textarea').forEach(textarea => {
-        const id = textarea.id;
-        updateCharCount(id);
-        textarea.addEventListener('input', function() { updateCharCount(id); });
+    function updateCharCount(elementId) {
+        const textarea = document.getElementById(elementId);
+        const counterId = elementId.replace('script', 'count');
+        const counter = document.getElementById(counterId);
+        if (counter && textarea) {
+            counter.textContent = textarea.value.length;
+            const percent = (textarea.value.length / (textarea.maxLength || 1000)) * 100;
+            counter.style.color = percent > 90 ? '#DC2626' : (percent > 70 ? '#FF9800' : 'var(--text-light)');
+        }
+    }
+
+    document.querySelectorAll('.script-textarea').forEach(ta => {
+        updateCharCount(ta.id);
+        ta.addEventListener('input', () => updateCharCount(ta.id));
     });
 
-    // Teclas de atalho para fechar/salvar
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeTitleEditor();
             closeDevModal();
+            closeAdminSettings();
         }
-        if (e.key === 'Enter' && document.getElementById('titleEditOverlay').classList.contains('active')) saveTitle();
+        if (e.key === 'Enter') {
+            if (document.getElementById('titleEditOverlay').classList.contains('active')) saveTitle();
+            if (document.getElementById('devAuthModal').classList.contains('active')) verifyDevPassword();
+        }
     });
-    
-    document.getElementById('titleEditOverlay').addEventListener('click', function(e) {
-        if (e.target === this) closeTitleEditor();
-    });
-    document.getElementById('devAuthModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDevModal();
+
+    // Fechar modais ao clicar fora
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
     });
 
     // Iniciar
